@@ -18,20 +18,22 @@ public class BTree {
         root = new Node();
     }
 
+    public BTree(Node root) {
+        this.root = root;
+    }
+
     public Node getRoot() {
         return this.root;
     }
 
     public BTree copy() {
-        BTree tree = new BTree();
-        tree.root = this.root.copy();
-        return tree;
+        return new BTree(this.getRoot().copy());
     }
 
     void splitChild(Node x, int i) {
         Node z = new Node();
         Node y = x.child(i);
-        z.isLeaf = y.isLeaf;
+        z.setIsLeaf(y.isLeaf());
         z.n = DEGREE - 1;
         z.keys = y.key(DEGREE, DEGREE * 2 - 1);
         if (y.isNonLeaf()) {
@@ -51,7 +53,7 @@ public class BTree {
         Node r = this.root;
         if (r.isFull()) {
             Node s = new Node();
-            s.isLeaf = false;
+            s.setIsLeaf(false);
             s.children.add(r);
             this.root = s;
             splitChild(s, 0);
@@ -65,7 +67,7 @@ public class BTree {
         if (node.isLeaf()) {
             node.n++;
             node.keys.add(key);
-            Collections.sort(node.keys);
+            node.sortKeys();
         } else {
             int idx = node.n - 1;
             while (idx >= 0 && node.key(idx) > key) {
@@ -89,7 +91,7 @@ public class BTree {
     }
 
     public List<Integer> toList() {
-        return this.root.toList();
+        return this.getRoot().toList();
     }
 
     public boolean isSameTree(BTree tree) {
@@ -153,6 +155,4 @@ public class BTree {
         }
         throw new RuntimeException("파일 로딩에 실패하였습니다.");
     }
-
-
 }
